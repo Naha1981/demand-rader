@@ -35,7 +35,7 @@ export function weatherOnly(
   }
 
   const weatherEvidence = available.filter(
-    (item) => ROOF_001.eventTypes.includes(item.signalType),
+    (item) => ROOF_001.eventTypes.some((type) => type === item.signalType),
   );
 
   if (weatherEvidence.length === 0) {
