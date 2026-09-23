@@ -35,11 +35,11 @@ export function behavior(
   }
 
   const weather = available.filter((item) =>
-    ROOF_001.eventTypes.includes(item.signalType),
+    ROOF_001.eventTypes.some((type) => type === item.signalType),
   );
 
   const consequence = available.filter((item) =>
-    ROOF_001.consequenceSignalTypes.includes(item.signalType),
+    ROOF_001.consequenceSignalTypes.some((type) => type === item.signalType),
   );
 
   const behaviorEvidence = available.filter(
