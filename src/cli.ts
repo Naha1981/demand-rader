@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { EvidenceSchema, type Evidence } from "./domain/evidence.js";
 import { MarketEventSchema } from "./domain/event.js";
 import { BusinessSchema } from "./domain/business.js";
+import type { DemandDecision } from "./domain/decision.js";
 import { weatherOnly } from "./models/weather-only.js";
 import { weatherConsequence } from "./models/weather-consequence.js";
 import { behavior } from "./models/behavior.js";
@@ -41,7 +42,7 @@ const modelFns = {
   MODEL_D_BUSINESS_FIT: businessFit,
 } as const;
 
-const decisions = Object.fromEntries(
+const decisions: Record<string, DemandDecision[]> = Object.fromEntries(
   Object.entries(modelFns).map(([name, fn]) => [
     name,
     event.replayCheckpoints.map((replayTime) =>
