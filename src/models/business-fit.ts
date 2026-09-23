@@ -29,6 +29,10 @@ export function businessFit(
       model: "MODEL_D_BUSINESS_FIT",
       decision: "SUPPRESSED",
       suppressionReason: "NO_CAPACITY",
+      hardGates: {
+        ...base.hardGates,
+        capacityAvailable: false,
+      },
       reasoningSteps: [
         ...base.reasoningSteps,
         "Provider capacity is zero.",
@@ -42,6 +46,11 @@ export function businessFit(
       model: "MODEL_D_BUSINESS_FIT",
       decision: "WATCH",
       suppressionReason: "INSUFFICIENT_EVIDENCE",
+      hardGates: {
+        ...base.hardGates,
+        capacityAvailable: true,
+        minimumJobEconomicsConfigured: false,
+      },
       reasoningSteps: [
         ...base.reasoningSteps,
         "Minimum job economics are not configured.",
@@ -52,6 +61,11 @@ export function businessFit(
   return {
     ...base,
     model: "MODEL_D_BUSINESS_FIT",
+    hardGates: {
+      ...base.hardGates,
+      capacityAvailable: true,
+      minimumJobEconomicsConfigured: true,
+    },
     reasoningSteps: [
       ...base.reasoningSteps,
       "Provider capacity is available.",
