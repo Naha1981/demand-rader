@@ -78,4 +78,34 @@ describe("core invariants", () => {
     );
     expect(a).toEqual(b);
   });
+  it("models cannot use evidence that is still in the future", () => {
+    const futureConsequence: Evidence = {
+      id: "F",
+      source: "future",
+      sourceUrl: "https://example.com/future",
+      availableAt: "2023-11-13T22:00:00Z",
+      signalType: "ROOFING_DAMAGE",
+      geographies: ["johannesburg"],
+      independenceGroup: "future-source",
+      contentHash: "fixture:f",
+      epistemicType: "REPORTED",
+      metadata: {},
+    };
+
+    const eventWithFutureEvidence: MarketEvent = {
+      ...event,
+      evidenceIds: ["W", "F"],
+    };
+
+    const result = weatherOnly(
+      eventWithFutureEvidence,
+      [weather, futureConsequence],
+      business,
+      new Date("2023-11-13T20:00:00Z"),
+    );
+
+    expect(result.evidenceIds).toEqual(["W"]);
+    expect(result.decision).toBe("ACTIONABLE");
+  });
+
 });
