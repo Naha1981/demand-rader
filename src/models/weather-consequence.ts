@@ -17,7 +17,7 @@ export function weatherConsequence(
   business: Business,
   replayTime: Date,
 ): DemandDecision {
-  const available = evidenceForEvent(event, evidence);
+  const available = evidenceForEvent(event, evidence, replayTime);
   const gates = commonGates(event, business, replayTime);
   const suppression = suppressionForCommonGate(gates);
 
