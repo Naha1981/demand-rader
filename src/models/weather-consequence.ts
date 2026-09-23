@@ -44,7 +44,10 @@ export function weatherConsequence(
 
   const evidenceUsed = [...weatherEvidence, ...consequenceEvidence];
   const groups = independentGroups(evidenceUsed);
-  const consequenceHasIndependentGroup = groups.length >= 2;
+  const consequenceHasIndependentGroup =
+    weatherEvidence.length > 0 &&
+    consequenceEvidence.length > 0 &&
+    groups.length >= 2;
 
   if (!consequenceHasIndependentGroup) {
     return decision(
