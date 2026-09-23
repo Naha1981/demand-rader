@@ -35,11 +35,11 @@ export function weatherConsequence(
   }
 
   const weatherEvidence = available.filter((item) =>
-    ROOF_001.eventTypes.includes(item.signalType),
+    ROOF_001.eventTypes.some((type) => type === item.signalType),
   );
 
   const consequenceEvidence = available.filter((item) =>
-    ROOF_001.consequenceSignalTypes.includes(item.signalType),
+    ROOF_001.consequenceSignalTypes.some((type) => type === item.signalType),
   );
 
   const evidenceUsed = [...weatherEvidence, ...consequenceEvidence];
