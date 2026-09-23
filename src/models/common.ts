@@ -52,10 +52,15 @@ export function suppressionForCommonGate(
 
 export function evidenceForEvent(
   event: MarketEvent,
-  availableEvidence: Evidence[],
+  evidence: Evidence[],
+  replayTime: Date,
 ): Evidence[] {
   const ids = new Set(event.evidenceIds);
-  return availableEvidence.filter((item) => ids.has(item.id));
+  return evidence.filter(
+    (item) =>
+      ids.has(item.id) &&
+      new Date(item.availableAt).getTime() <= replayTime.getTime(),
+  );
 }
 
 export function independentGroups(evidence: Evidence[]): string[] {
