@@ -1,0 +1,30 @@
+{
+  "eventId": "GE-001",
+  "labels": {
+    "eventVerified": "YES",
+    "consequenceVerified": "YES",
+    "demandIndicated": "UNKNOWN",
+    "purchaseIntentIndicated": "UNKNOWN",
+    "commercialOutcomeVerified": "UNKNOWN"
+  },
+  "goldEvidence": [
+    {
+      "publisher": "South African Weather Service",
+      "sourceUrl": "https://www.weathersa.co.za/Documents/AnnualReports/SAWS_AR2024_FINAL_WEB_VERSION_161024_27032025105202.pdf",
+      "role": "retrospective_authoritative_event_verification",
+      "availableTo2023Replay": false
+    },
+    {
+      "publisher": "SABC News",
+      "sourceUrl": "https://www.sabcnews.com/sabcnews/893624-2-2/",
+      "role": "contemporary_initial_report"
+    },
+    {
+      "publisher": "TimesLIVE",
+      "sourceUrl": "https://www.timeslive.co.za/news/south-africa/2023-11-13-hailstorms-and-apparent-tornado-in-gauteng-and-mpumalanga/",
+      "role": "contemporary_independent_consequence_report"
+    }
+  ],
+  "annotationStatus": "reviewed",
+  "reviewerNotes": "Roofing purchase intent and commercial outcome remain unknown until business outcome data exists."
+}

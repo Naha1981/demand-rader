@@ -1,0 +1,25 @@
+{
+  "id": "GE-001",
+  "eventType": "SEVERE_WEATHER_HAIL",
+  "title": "13 November 2023 Gauteng severe-weather and hail event",
+  "description": "Historical replay fixture for the Gauteng/Johannesburg hailstorm and severe-weather episode. Timing is represented through evidence availability rather than an invented physical start time.",
+  "geographies": ["gauteng","johannesburg","midrand","rosebank","paulshof","marlboro","soweto","braamfontein","sandton"],
+  "severity": 90,
+  "status": "RESOLVED",
+  "evidenceIds": [
+    "GE001-SABC-1936",
+    "GE001-TIMESLIVE-2229",
+    "GE001-SABC-0528",
+    "GE001-TIMESLIVE-0814",
+    "GE001-SABC-0937",
+    "GE001-TIMESLIVE-1052",
+    "GE001-SABC-1610"
+  ],
+  "demandWindowHours": 336,
+  "replayCheckpoints": [
+    "2023-11-13T17:36:00Z",
+    "2023-11-13T20:29:00Z",
+    "2023-11-14T03:28:00Z",
+    "2023-11-14T14:10:00Z"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "BUS-ROOFING-JHB-01",
+  "name": "Johannesburg Roofing Example",
+  "active": true,
+  "services": ["roof inspection","roof repair","storm damage repair"],
+  "serviceArea": ["gauteng","johannesburg","midrand","rosebank","paulshof","marlboro","soweto","braamfontein","sandton"],
+  "emergencyAvailable": true,
+  "capacity": 5,
+  "minimumJobValue": 2500,
+  "preferredJobTypes": ["storm damage","roof leak","roof repair"]
+}
