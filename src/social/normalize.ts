@@ -17,7 +17,9 @@ function stringValue(...values: unknown[]): string | undefined {
 }
 
 function arrayOfRecords(value: unknown): RecordValue[] {
-  return Array.isArray(value) ? value.filter((item): item is RecordValue => item !== null && typeof item === "object" && !Array.isArray(item)) : [];
+  return Array.isArray(value)
+    ? value.filter((item): item is RecordValue => item !== null && typeof item === "object" && !Array.isArray(item))
+    : [];
 }
 
 function hash(value: string): string {
@@ -71,10 +73,10 @@ function accessState(run: JevSocialRun): SocialEvidence["accessState"] {
   const status = String(run.status ?? "").toLowerCase();
   const reason = String(run.stopReason ?? "").toLowerCase();
 
-  if (status.includes("blocked") || reason.includes("access denied")) return "BLOCKED";
   if (reason.includes("login") || reason.includes("sign in")) return "LOGIN_REQUIRED";
   if (reason.includes("challenge") || reason.includes("captcha")) return "CHALLENGE";
   if (reason.includes("rate limit") || reason.includes("rate_limited")) return "RATE_LIMITED";
+  if (status.includes("blocked") || reason.includes("access denied")) return "BLOCKED";
   if (status === "partial" || status === "interrupted" || status === "decision_failed") return "INCOMPLETE";
   return "PUBLIC";
 }
@@ -89,15 +91,16 @@ export function normalizeJevSocialRun(
   const items = arrayOfRecords(result.items);
   const seen = new Set<string>();
   const observedIso = observedAt.toISOString();
-  const availableAt = typeof run.createdAt === "string" && !Number.isNaN(Date.parse(run.createdAt))
-    ? new Date(run.createdAt).toISOString()
-    : observedIso;
+  const availableAt =
+    typeof run.createdAt === "string" && !Number.isNaN(Date.parse(run.createdAt))
+      ? new Date(run.createdAt).toISOString()
+      : observedIso;
   const access = accessState(run);
 
   const evidence: SocialEvidence[] = [];
 
   for (const item of items) {
-    const url = normalizeUrl(StringValue(item.url, item.web_url, item.share_url));
+    const url = normalizeUrl(stringValue(item.url, item.web_url, item.share_url) ?? "");
     if (!url || seen.has(url)) continue;
     seen.add(url);
 
@@ -107,9 +110,10 @@ export function normalizeJevSocialRun(
     const text = textFromItem(item);
     const contentHash = hash([platform, url, text].join("|"));
     const publishedAtRaw = stringValue(item.published_at, item.publishedAt, item.timestamp, item.date);
-    const publishedAt = publishedAtRaw && !Number.isNaN(Date.parse(publishedAtRaw))
-      ? new Date(publishedAtRaw).toISOString()
-      : undefined;
+    const publishedAt =
+      publishedAtRaw && !Number.isNaN(Date.parse(publishedAtRaw))
+        ? new Date(publishedAtRaw).toISOString()
+        : undefined;
 
     const candidate: SocialEvidence = {
       id: "social_" + hash(platform + "|" + url).slice(0, 20),
@@ -146,8 +150,4 @@ export function normalizeJevSocialRun(
     accessState: access,
     ...(typeof run.elapsedMs === "number" ? { elapsedMs: run.elapsedMs } : {}),
   };
-}
-
-function StringValue(...values: unknown[]): string | undefined {
-  return stringValue(...values);
 }
