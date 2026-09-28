@@ -1,6 +1,6 @@
 import { evaluateRoofingSignals } from "./policy.js";
 import { toDemandRadarEvidenceBatch } from "./bridge.js";
-import { runJevSocialSearch } from "./jev-social.js";
+import { runSocialSearch } from "./runner.js";
 
 function parseArgs(args: string[]) {
   const positionals: string[] = [];
@@ -30,10 +30,12 @@ function parseArgs(args: string[]) {
 
   return {
     query: positionals.join(" ").trim(),
-    platform: flags.platform as "auto" | "instagram" | "tiktok" | "linkedin" | undefined,
+    source: flags.source as "jev" | "x" | undefined,
+    platform: flags.platform as "auto" | "instagram" | "tiktok" | "linkedin" | "x" | undefined,
     limit: flags.limit ? Number(flags.limit) : undefined,
     maxSteps: flags["max-steps"] ? Number(flags["max-steps"]) : undefined,
     timeoutMs: flags.timeout ? Number(flags.timeout) : undefined,
+    latest: flags.latest !== "false",
     geographyTerms: flags.geography
       ? flags.geography.split(",").map((value) => value.trim()).filter(Boolean)
       : ["Gauteng", "Johannesburg", "Pretoria", "Sandton"],
@@ -43,16 +45,21 @@ function parseArgs(args: string[]) {
 const options = parseArgs(process.argv.slice(2));
 
 if (!options.query) {
-  console.error("Usage: pnpm social:scan -- <research goal> [--platform instagram|tiktok|linkedin|auto] [--geography Gauteng,Johannesburg]");
+  console.error(
+    "Usage: pnpm social:scan -- <research goal> [--source jev|x] [--platform instagram|tiktok|linkedin|x|auto] [--latest=true|false] [--geography Gauteng,Johannesburg]",
+  );
   process.exitCode = 1;
 } else {
   try {
-    const scan = await runJevSocialSearch({
+    const source = options.source ?? (options.platform === "x" ? "x" : "jev");
+    const scan = await runSocialSearch({
       query: options.query,
-      ...(options.platform ? { platform: options.platform } : {}),
+      source,
+      platform: options.platform,
       ...(options.limit !== undefined ? { limit: options.limit } : {}),
       ...(options.maxSteps !== undefined ? { maxSteps: options.maxSteps } : {}),
       ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
+      latest: options.latest,
       geographyTerms: options.geographyTerms,
     });
     const signals = evaluateRoofingSignals(scan.evidence, {
@@ -61,14 +68,21 @@ if (!options.query) {
     });
     const demandRadarEvidence = toDemandRadarEvidenceBatch(scan.evidence, signals);
 
-    console.log(JSON.stringify({
-      scan,
-      roofing: {
-        signals,
-        candidates: signals.filter((signal) => signal.candidateForOpportunity),
-      },
-      demandRadarEvidence,
-    }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          source,
+          scan,
+          roofing: {
+            signals,
+            candidates: signals.filter((signal) => signal.candidateForOpportunity),
+          },
+          demandRadarEvidence,
+        },
+        null,
+        2,
+      ),
+    );
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
