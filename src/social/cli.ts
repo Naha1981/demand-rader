@@ -47,9 +47,16 @@ if (!options.query) {
   process.exitCode = 1;
 } else {
   try {
-    const scan = await runJevSocialSearch(options);
+    const scan = await runJevSocialSearch({
+      query: options.query,
+      ...(options.platform ? { platform: options.platform } : {}),
+      ...(options.limit !== undefined ? { limit: options.limit } : {}),
+      ...(options.maxSteps !== undefined ? { maxSteps: options.maxSteps } : {}),
+      ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
+      geographyTerms: options.geographyTerms,
+    });
     const signals = evaluateRoofingSignals(scan.evidence, {
-      geographyTerms: options.geographyTerms ?? [],
+      geographyTerms: options.geographyTerms,
       requireGeographyForCandidate: true,
     });
     const demandRadarEvidence = toDemandRadarEvidenceBatch(scan.evidence, signals);
