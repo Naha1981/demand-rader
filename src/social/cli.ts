@@ -10,7 +10,9 @@ function parseArgs(args: string[]) {
     if (!token) continue;
 
     if (token.startsWith("--")) {
-      const [key, inlineValue] = token.slice(2).split("=", 2);
+      const parts = token.slice(2).split("=", 2);
+      const key = parts[0] ?? "";
+      const inlineValue = parts[1];
       const next = args[index + 1];
       if (inlineValue !== undefined) {
         flags[key] = inlineValue;
@@ -31,7 +33,9 @@ function parseArgs(args: string[]) {
     limit: flags.limit ? Number(flags.limit) : undefined,
     maxSteps: flags["max-steps"] ? Number(flags["max-steps"]) : undefined,
     timeoutMs: flags.timeout ? Number(flags.timeout) : undefined,
-    geographyTerms: flags.geography ? flags.geography.split(",").map((value) => value.trim()).filter(Boolean) : ["Gauteng", "Johannesburg", "Pretoria", "Sandton"],
+    geographyTerms: flags.geography
+      ? flags.geography.split(",").map((value) => value.trim()).filter(Boolean)
+      : ["Gauteng", "Johannesburg", "Pretoria", "Sandton"],
   };
 }
 
