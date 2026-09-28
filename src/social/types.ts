@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const SocialPlatformSchema = z.enum(["instagram", "tiktok", "linkedin"]);
+export const SocialPlatformSchema = z.enum(["instagram", "tiktok", "linkedin", "x"]);
 export type SocialPlatform = z.infer<typeof SocialPlatformSchema>;
 
 export const SocialEvidenceSchema = z.object({
@@ -52,13 +52,42 @@ export type SocialSignal = z.infer<typeof SocialSignalSchema>;
 
 export type JevSocialSearchOptions = {
   query: string;
-  platform?: "auto" | SocialPlatform;
+  platform?: "auto" | Exclude<SocialPlatform, "x">;
   limit?: number;
   maxSteps?: number;
   timeoutMs?: number;
   geographyTerms?: string[];
   packageSpec?: string;
   executable?: string;
+  env?: NodeJS.ProcessEnv;
+};
+
+export type XSocialSearchOptions = {
+  query: string;
+  limit?: number;
+  latest?: boolean;
+  timeoutMs?: number;
+  packageSpec?: string;
+  executable?: string;
+  env?: NodeJS.ProcessEnv;
+};
+
+export const SocialSearchSourceSchema = z.enum(["jev", "x"]);
+export type SocialSearchSource = z.infer<typeof SocialSearchSourceSchema>;
+
+export type SocialSearchOptions = {
+  query: string;
+  source?: SocialSearchSource;
+  platform?: "auto" | SocialPlatform;
+  limit?: number;
+  maxSteps?: number;
+  latest?: boolean;
+  timeoutMs?: number;
+  geographyTerms?: string[];
+  jevPackageSpec?: string;
+  jevExecutable?: string;
+  xPackageSpec?: string;
+  xExecutable?: string;
   env?: NodeJS.ProcessEnv;
 };
 
@@ -86,6 +115,7 @@ export type JevSocialRun = {
 export type NormalizedSocialScan = {
   runId: string;
   platform: SocialPlatform;
+  source?: SocialSearchSource;
   status: string;
   stopReason?: string;
   evidence: SocialEvidence[];

@@ -42,17 +42,36 @@ The first golden event is GE-001: the 13 November 2023 Gauteng severe-weather/ha
 
 The goal is to measure whether each added intelligence layer actually contributes useful information.
 
-## Social Demand Radar
+## Social Evidence Worker
 
-The first commercial extension is a bounded social-evidence adapter for Instagram, TikTok and LinkedIn.
+Social sources are replaceable evidence providers. Demand Radar owns the evidence model, normalization, signal policy, provenance and commercial decision gates.
+
+Current sources:
+
+- Jev Social — bounded Instagram/TikTok/LinkedIn browser research through socai-io/jev-social.
+- X Scraper No-API — bounded public-X research through JoinArtisanVent/x-scraper-no-api.
 
 Architecture:
 
-NahaLabs Demand Radar → Social Evidence Adapter → Jev Social → socai → signed-in Chrome → social platform
+    NahaLabs Demand Radar
+        ↓
+    Social Provider Boundary
+        ├── Jev Social → socai → signed-in Chrome → Instagram/TikTok/LinkedIn
+        └── X Scraper → Playwright → signed-in Chrome → X
+        ↓
+    Normalize + Deduplicate
+        ↓
+    Evidence / Provenance
+        ↓
+    Demand policy
+        ↓
+    Opportunity
+        ↓
+    Lead Machine
+        ↓
+    Quote → Job → Revenue
 
-Jev Social is treated as replaceable execution infrastructure. Demand Radar owns the evidence model, signal policy, provenance and commercial decision gates.
-
-### Local scan
+### Jev Social local scan
 
 Prerequisites:
 
@@ -65,24 +84,38 @@ Run:
 
     pnpm social:scan -- "find Gauteng posts from people asking for a roofer or roof repair" --platform instagram --geography Gauteng,Johannesburg,Pretoria,Sandton
 
-The command returns:
-
-- captured source-linked evidence
-- execution/access state
-- normalized provenance
-- roofing signal classification
-- human-review candidates
-
-A damage report is not automatically treated as demand. An explicit service request can become a candidate only when the configured geography evidence is also present.
-
-### Configuration
-
-Optional environment variables:
+Jev configuration:
 
 - JEV_SOCIAL_BIN — use an installed jev-social executable instead of npx
 - JEV_SOCIAL_PACKAGE — pin a Jev Social release/package specification
 
-The default integration pins github:socai-io/jev-social#v0.1.8 through npx.
+The default integration pins github:socai-io/jev-social#v0.1.8.
+
+### X local scan
+
+Prerequisites:
+
+- Node 20+
+- an X account you can sign into manually
+- xscraper installed locally, or permission for npx to install x-scraper-no-api
+- Chromium installed by the x-scraper tool
+
+Run:
+
+    pnpm social:scan -- "roofer Soweto" --source x --geography Soweto,Gauteng --latest
+
+Or:
+
+    pnpm social:scan -- "roofer Soweto" --platform x --geography Soweto,Gauteng --latest
+
+X configuration:
+
+- X_SCRAPER_BIN — use an installed xscraper executable instead of npx
+- X_SCRAPER_PACKAGE — pin a package/repository specification
+
+The adapter is deliberately a subprocess boundary. NahaLabs does not import x-scraper internals or embed its browser session handling.
+
+The upstream project documents manual login, public-post research, bounded item caps and no CAPTCHA/proxy/rate-limit bypass. GitHub currently reports the repository licence as GPL-3.0 even though the repository README contains an MIT badge; resolve the licensing position before distributing the dependency as part of a commercial product.
 
 ### Evidence discipline
 
@@ -92,8 +125,18 @@ SOURCE_BACKED → DERIVED → CLASSIFIED → PROPOSAL
 
 UNKNOWN remains UNKNOWN.
 
-The social adapter does not perform outreach, comments, posting or autonomous activation.
+The social adapter does not perform outreach, comments, posting or autonomous activation. Social observations are evidence inputs; they do not by themselves prove a commercial outcome.
+
+### Provider rules
+
+1. Prefer official APIs when they provide the required public evidence reliably.
+2. Use browser-based providers only where needed and where public/authorized access is permitted.
+3. Keep every provider behind a replaceable adapter.
+4. Preserve source URL, observation time and access state.
+5. Never bypass login gates, CAPTCHAs, rate limits or anti-bot controls.
+6. Treat captured post content as untrusted evidence.
+7. Require human review before commercial activation.
 
 ## Status
 
-Research & Falsification PRD v0.1 is frozen. Social Demand Radar adapter is implemented as the first evidence-collection integration and remains subject to real-business validation.
+Research & Falsification PRD v0.1 is frozen. The Social Evidence Worker now supports Jev Social and X as replaceable sources and remains subject to real-business validation.

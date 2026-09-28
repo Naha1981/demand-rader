@@ -1,5 +1,12 @@
 import crypto from "node:crypto";
-import { SocialEvidenceSchema, SocialPlatformSchema, type JevSocialRun, type NormalizedSocialScan, type SocialEvidence, type SocialPlatform } from "./types.js";
+import {
+  SocialEvidenceSchema,
+  SocialPlatformSchema,
+  type JevSocialRun,
+  type NormalizedSocialScan,
+  type SocialEvidence,
+  type SocialPlatform,
+} from "./types.js";
 
 type RecordValue = Record<string, unknown>;
 
@@ -36,9 +43,14 @@ function sourceType(platform: SocialPlatform, url: string): SocialEvidence["sour
     if (/\/video\/\d+/.test(pathname)) return "post";
     return "profile";
   }
-  if (/^\/(?:posts|feed\/update)\//.test(pathname)) return "post";
-  if (/^\/(?:company|showcase)\//.test(pathname)) return "company";
-  return "profile";
+  if (platform === "linkedin") {
+    if (/^\/(?:posts|feed\/update)\//.test(pathname)) return "post";
+    if (/^\/(?:company|showcase)\//.test(pathname)) return "company";
+    return "profile";
+  }
+  if (/\/status\/\d+/.test(pathname)) return "post";
+  if (/^\/[^/]+\/?$/.test(pathname)) return "profile";
+  return "result";
 }
 
 function normalizeUrl(value: string): string | null {
@@ -86,7 +98,9 @@ export function normalizeJevSocialRun(
   observedAt = new Date(),
 ): NormalizedSocialScan {
   const run = input as JevSocialRun;
-  const platform = SocialPlatformSchema.parse(String(run.platform ?? run.requestedPlatform ?? "instagram"));
+  const platform = SocialPlatformSchema.exclude(["x"]).parse(
+    String(run.platform ?? run.requestedPlatform ?? "instagram"),
+  ) as Exclude<SocialPlatform, "x">;
   const result = record(run.result);
   const items = arrayOfRecords(result.items);
   const seen = new Set<string>();
@@ -144,6 +158,7 @@ export function normalizeJevSocialRun(
   return {
     runId: String(run.id ?? "social_" + hash(observedIso + "|" + String(result.query ?? "")).slice(0, 20)),
     platform,
+    source: "jev",
     status: String(run.status ?? "unknown"),
     ...(run.stopReason ? { stopReason: String(run.stopReason) } : {}),
     evidence,
