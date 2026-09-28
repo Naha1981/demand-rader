@@ -1,4 +1,5 @@
 import { evaluateRoofingSignals } from "./policy.js";
+import { toDemandRadarEvidenceBatch } from "./bridge.js";
 import { runJevSocialSearch } from "./jev-social.js";
 
 function parseArgs(args: string[]) {
@@ -51,6 +52,7 @@ if (!options.query) {
       geographyTerms: options.geographyTerms ?? [],
       requireGeographyForCandidate: true,
     });
+    const demandRadarEvidence = toDemandRadarEvidenceBatch(scan.evidence, signals);
 
     console.log(JSON.stringify({
       scan,
@@ -58,6 +60,7 @@ if (!options.query) {
         signals,
         candidates: signals.filter((signal) => signal.candidateForOpportunity),
       },
+      demandRadarEvidence,
     }, null, 2));
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
