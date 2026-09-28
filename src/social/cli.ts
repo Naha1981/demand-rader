@@ -55,7 +55,7 @@ if (!options.query) {
     const scan = await runSocialSearch({
       query: options.query,
       source,
-      platform: options.platform,
+      ...(options.platform !== undefined ? { platform: options.platform } : {}),
       ...(options.limit !== undefined ? { limit: options.limit } : {}),
       ...(options.maxSteps !== undefined ? { maxSteps: options.maxSteps } : {}),
       ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
