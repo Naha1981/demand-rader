@@ -1,6 +1,7 @@
 import type { SocialEvidence, SocialSignal } from "./types.js";
 
 const SERVICE_TERMS = [
+  "roofer",
   "roof repair",
   "roof repairs",
   "roofing",
