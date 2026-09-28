@@ -12,9 +12,9 @@ export async function runSocialSearch(
   if (source === "x") {
     return runXScraperSearch({
       query: options.query,
-      limit: options.limit,
-      latest: options.latest,
-      timeoutMs: options.timeoutMs,
+      ...(options.limit !== undefined ? { limit: options.limit } : {}),
+      ...(options.latest !== undefined ? { latest: options.latest } : {}),
+      ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
       ...(options.xPackageSpec ? { packageSpec: options.xPackageSpec } : {}),
       ...(options.xExecutable ? { executable: options.xExecutable } : {}),
       ...(options.env ? { env: options.env } : {}),
@@ -27,9 +27,9 @@ export async function runSocialSearch(
   return runJevSocialSearch({
     query: options.query,
     platform,
-    limit: options.limit,
-    maxSteps: options.maxSteps,
-    timeoutMs: options.timeoutMs,
+    ...(options.limit !== undefined ? { limit: options.limit } : {}),
+    ...(options.maxSteps !== undefined ? { maxSteps: options.maxSteps } : {}),
+    ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
     ...(options.jevPackageSpec ? { packageSpec: options.jevPackageSpec } : {}),
     ...(options.jevExecutable ? { executable: options.jevExecutable } : {}),
     ...(options.env ? { env: options.env } : {}),
