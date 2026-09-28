@@ -79,6 +79,7 @@ export function evaluateRoofingSignal(
   const damageMatches = matches(text, DAMAGE_TERMS);
   const recommendationMatches = matches(text, RECOMMENDATION_TERMS);
   const geographyMatches = policy.geographyTerms.filter((term) => text.includes(normalized(term)));
+  const mentionsRoof = /\broof\b/.test(text);
 
   if (requestMatches.length > 0 && serviceMatches.length === 0) {
     return {
@@ -106,13 +107,15 @@ export function evaluateRoofingSignal(
       matchedTerms: [...new Set([...requestMatches, ...serviceMatches, ...geographyMatches])],
       reasons: [
         "The source explicitly references a roofing service need.",
-        ...(geographyMatched ? ["Configured geography evidence was found in the captured text."] : ["Geography was not independently confirmed in the captured text."]),
+        ...(geographyMatched
+          ? ["Configured geography evidence was found in the captured text."]
+          : ["Geography was not independently confirmed in the captured text."]),
         "Human review is required before commercial activation.",
       ],
     };
   }
 
-  if (damageMatches.length > 0 && serviceMatches.length > 0) {
+  if (damageMatches.length > 0 && (serviceMatches.length > 0 || mentionsRoof)) {
     return {
       evidenceId: evidence.id,
       signalType: "DAMAGE_REPORT",
@@ -120,7 +123,7 @@ export function evaluateRoofingSignal(
       geographyMatched: geographyMatches.length > 0,
       candidateForOpportunity: false,
       requiresHumanReview: true,
-      matchedTerms: [...new Set([...damageMatches, ...serviceMatches])],
+      matchedTerms: [...new Set([...damageMatches, ...serviceMatches, ...(mentionsRoof ? ["roof"] : [])])],
       reasons: ["A roofing-related damage condition was observed, but no explicit request for service was captured."],
     };
   }
