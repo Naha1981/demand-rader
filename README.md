@@ -18,7 +18,6 @@ It deliberately excludes production SaaS concerns:
 - no authentication
 - no billing
 - no autonomous activation
-- no AI agents
 - no graph database
 - no production search integrations
 - no multi-tenancy
@@ -43,6 +42,58 @@ The first golden event is GE-001: the 13 November 2023 Gauteng severe-weather/ha
 
 The goal is to measure whether each added intelligence layer actually contributes useful information.
 
+## Social Demand Radar
+
+The first commercial extension is a bounded social-evidence adapter for Instagram, TikTok and LinkedIn.
+
+Architecture:
+
+NahaLabs Demand Radar → Social Evidence Adapter → Jev Social → socai → signed-in Chrome → social platform
+
+Jev Social is treated as replaceable execution infrastructure. Demand Radar owns the evidence model, signal policy, provenance and commercial decision gates.
+
+### Local scan
+
+Prerequisites:
+
+- Node 20+
+- Chrome signed in to the social platform you want to research
+- socai installed, or permission for Jev Social to install it
+- an OpenRouter Jev-compatible decision provider, or a local System One-compatible provider
+
+Run:
+
+    pnpm social:scan -- "find Gauteng posts from people asking for a roofer or roof repair" --platform instagram --geography Gauteng,Johannesburg,Pretoria,Sandton
+
+The command returns:
+
+- captured source-linked evidence
+- execution/access state
+- normalized provenance
+- roofing signal classification
+- human-review candidates
+
+A damage report is not automatically treated as demand. An explicit service request can become a candidate only when the configured geography evidence is also present.
+
+### Configuration
+
+Optional environment variables:
+
+- JEV_SOCIAL_BIN — use an installed jev-social executable instead of npx
+- JEV_SOCIAL_PACKAGE — pin a Jev Social release/package specification
+
+The default integration pins github:socai-io/jev-social#v0.1.8 through npx.
+
+### Evidence discipline
+
+Social evidence is kept separate from commercial conclusions:
+
+SOURCE_BACKED → DERIVED → CLASSIFIED → PROPOSAL
+
+UNKNOWN remains UNKNOWN.
+
+The social adapter does not perform outreach, comments, posting or autonomous activation.
+
 ## Status
 
-Research & Falsification PRD v0.1 is frozen. Implementation is underway.
+Research & Falsification PRD v0.1 is frozen. Social Demand Radar adapter is implemented as the first evidence-collection integration and remains subject to real-business validation.

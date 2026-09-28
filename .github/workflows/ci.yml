@@ -2,7 +2,7 @@ name: Research Harness CI
 
 on:
   push:
-    branches: ["main", "research/**"]
+    branches: ["main", "research/**", "feat/**"]
   pull_request:
 
 jobs:

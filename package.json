@@ -7,7 +7,8 @@
   "scripts": {
     "check": "tsc --noEmit",
     "test": "vitest run",
-    "replay": "tsx src/cli.ts"
+    "replay": "tsx src/cli.ts",
+    "social:scan": "tsx src/social/cli.ts"
   },
   "dependencies": {
     "zod": "^3.25.76"
